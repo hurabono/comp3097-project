@@ -111,12 +111,15 @@ struct ShoppingListView: View {
     // MARK: - Category Section
     private func categorySection(i: Int) -> some View {
         let cat = categories[i]
-        return VStack(spacing: 0) {
+        return VStack(alignment: .center, spacing: 0) {
             // 카테고리 바
             HStack {
+                
                 Text(cat.name)
                     .font(.headline)
                     .foregroundColor(.gray)
+                    
+                  
                 Spacer()
                 Menu {
                     Button(role: .destructive) { deleteCategory(i) } label: { Text("Delete Category") }
@@ -141,11 +144,15 @@ struct ShoppingListView: View {
                     .shadow(color: .gray.opacity(0.2), radius: 2, x: 0, y: 1)
             )
             
+            
             if cat.isExpanded {
                 ZStack(alignment: .topLeading) {
-                    RoundedRectangle(cornerRadius: 12)
+                    RoundedRectangle(cornerRadius: 15)
+                        
+                        
                         .foregroundColor(.white)
-                        .shadow(color: .gray.opacity(0.15), radius: 3, x: 0, y: 2)
+                        .shadow(color: .gray.opacity(0.15), radius: 3, x: -1, y: 2)
+                        
                     
                     VStack(alignment: .leading, spacing: 0) {
                         HStack {
@@ -158,7 +165,7 @@ struct ShoppingListView: View {
                                 .font(.subheadline)
                                 .foregroundColor(.gray)
                         }
-                        .padding(.horizontal, 16)
+                        .padding(.horizontal, 20)
                         .padding(.top, 10)
                         Divider()
                         ForEach(cat.items.indices, id: \.self) { j in
@@ -188,7 +195,8 @@ struct ShoppingListView: View {
                                 Image(systemName: "plus.circle")
                                     .foregroundColor(.gray)
                             }
-                            .padding(.vertical, 8)
+                            .padding(.vertical, 10)
+                            .padding(.horizontal, 10)
                         }
                         .padding(.bottom, 8)
                     }
@@ -210,7 +218,7 @@ struct ShoppingListView: View {
                     Circle()
                         .stroke(Color.gray, lineWidth: 2)
                 
-                        .frame(width: 18, height: 18)
+                        .frame(width: 20, height: 18)
                 }
             }
             VStack(alignment: .leading, spacing: 2) {
@@ -241,7 +249,7 @@ struct ShoppingListView: View {
                     .padding(.leading, 4)
             }
         }
-        .padding(.vertical, 8)
+        .padding(.vertical, 8.0)
         .padding(.horizontal, 10)
     }
     
@@ -423,7 +431,7 @@ struct AddItemSheet: View {
             Text("Add New Item")
                 .font(.headline)
                 .foregroundColor(.gray)
-                .padding(.top, 20)
+                .padding(.top, 40)
             Spacer()
             VStack(alignment: .leading, spacing: 4) {
                 Text("Item Name")
@@ -470,7 +478,7 @@ struct AddItemSheet: View {
                     .cornerRadius(8)
             }
             .padding(.horizontal, 24)
-            .padding(.top, 20)
+            .padding(.top, 0)
             Spacer()
         }
         .presentationDetents([.height(350)])
@@ -483,6 +491,5 @@ struct AddItemSheet: View {
 #Preview {
     ShoppingListView(folderName: "Grocery Folder")
 }
-
 
 
