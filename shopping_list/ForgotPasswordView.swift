@@ -1,10 +1,3 @@
-//
-//  ForgotPasswordView.swift
-//  shopping_list
-//
-//  Created by Heesu Cho on 2025-02-27.
-//
-
 import SwiftUI
 
 struct ForgotPasswordView: View {
@@ -49,5 +42,4 @@ struct ForgotPasswordView: View {
 #Preview {
     ForgotPasswordView()
 }
-
 
