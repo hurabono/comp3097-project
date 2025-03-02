@@ -1,4 +1,4 @@
-//created by mantej singh samra
+//created by mantej singh Samra
 import SwiftUI
 
 struct ForgotPasswordView: View {
