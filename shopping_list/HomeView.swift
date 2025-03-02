@@ -25,7 +25,9 @@ struct Folder: Identifiable, Codable {
 }
 
 struct HomeView: View {
+    // Home view default value
     // MARK: - State
+    // ser empty space > No folder 
     @State private var folders: [Folder] = []
 
     // Add Folder Sheet
@@ -42,11 +44,14 @@ struct HomeView: View {
     @State private var editFolderName: String = ""
     @State private var editFolderDescription: String = ""
 
-    // 3-dot menu for each folder
+    // 3dots menu for each folder
+    // modal delete and edit folder 
     @State private var folderForOptions: Folder? = nil
     @State private var isShowingFolderOptions = false
 
-    // Bottom tab selection (0=Home, 1=List, 2=Settings)
+    // Bottom tab selection 
+    // Bottom tab will imply soon for every sections
+    // 0=Home, 1=List, 2=Settings
     @State private var selectedTab: Int = 0
 
     // MARK: - Body
@@ -135,7 +140,7 @@ struct HomeView: View {
 
             Spacer()
 
-            // "EZ list" logo
+            // App logo
             HStack(spacing: 0) {
                 Text("E")
                     .foregroundColor(Color(red: 0.54, green: 0.73, blue: 0.91))
@@ -197,14 +202,14 @@ struct HomeView: View {
         }
     }
 
-    // MARK: - List Tab (placeholder)
+    // MARK: - List Tab
     private var listTabView: some View {
         Text("List Screen")
             .font(.headline)
             .foregroundColor(.gray)
     }
 
-    // MARK: - Settings Tab (placeholder)
+    // MARK: - Settings Tab
     private var settingsTabView: some View {
         Text("Settings Screen")
             .font(.headline)
@@ -281,7 +286,7 @@ struct HomeView: View {
         .padding(.bottom, 10)
     }
 
-    // MARK: - Floating + Button
+    // MARK: - Floating Add folder Button
     private var plusFloatingButton: some View {
         VStack {
             Spacer()
