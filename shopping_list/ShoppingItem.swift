@@ -14,8 +14,8 @@ struct ShoppingItem: Identifiable, Codable {
     var price: Double
     var category: String
     
-    // 온타리오 법 기준 세금 계산:
-    // "Food"이면 세금 없음, 그 외(예: Medication, Cleaning, Other)는 13% HST 적용
+    // Tax calculation based on Ontario Tax policy
+    // Raw food > No Tax. and Others > Medication, Cleaning, Other is 13% HST
     var taxRate: Double {
         if category.lowercased() == "food" {
             return 0.0
