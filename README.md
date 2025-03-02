@@ -1,7 +1,15 @@
 # Shopping List App (COMP3079 Project)
+![image](https://github.com/user-attachments/assets/5398a668-db37-4e14-904a-d73119b2d27a)
+<br><br>
+![image](https://github.com/user-attachments/assets/f215f744-f7d8-404a-9767-5ea65beda355)
 
 ## Overview
 Shopping List App is a SwiftUI-based application designed to help users manage their shopping lists in an organized manner. Users can create folders, add categories, and enter shopping items within each category. The app automatically calculates taxes based on Ontario Canadian law.
+
+
+## Figma
+https://www.figma.com/design/uzYPPIDsKlK6yyUuLkDHk8/IOS-GBC-Project?node-id=0-1&t=aUvshnSWeCkuVTiV-1
+
 
 ## Key Features
 - **Folder & Category Management**
