@@ -14,7 +14,7 @@ struct ShoppingListView: View {
     
     @State private var categories: [CategoryModel] = []
     
-    // 카테고리 추가/수정용 상태
+    // category add and edit default value
     @State private var isShowingAddCategorySheet = false
     @State private var newCategoryName = ""
     
@@ -22,11 +22,12 @@ struct ShoppingListView: View {
     @State private var editCategoryIndex: Int? = nil
     @State private var editCategoryName = ""
     
-    // 항목 추가용 상태 (어느 카테고리에 추가할지)
+    // which category do i have to add?
+    // add catogory > Add category title > add Item > added list in the category
     @State private var isShowingAddItemSheet = false
     @State private var addItemCategoryIndex: Int? = nil
     
-    // 하단 네비게이션 선택 (0=Home, 1=List, 2=Settings)
+    // Bottom Navigation bar
     @State private var selectedTab: Int = 1
     
     var body: some View {
@@ -57,11 +58,13 @@ struct ShoppingListView: View {
             }
             .navigationBarHidden(true)
             .onAppear { loadCategories() }
-            // 카테고리 추가 모달
+            
+           // MODAL SETTINGS 
+             // Category add modal 
             .sheet(isPresented: $isShowingAddCategorySheet) { addCategorySheet }
-            // 카테고리 수정 모달
+            // Category Edit modal
             .sheet(isPresented: $isShowingEditCategorySheet) { editCategorySheet }
-            // 항목 추가 모달
+            // catogory Items modal 
             .sheet(isPresented: $isShowingAddItemSheet) {
                 let idx = addItemCategoryIndex ?? 0
                 if idx < categories.count {
@@ -112,7 +115,7 @@ struct ShoppingListView: View {
     private func categorySection(i: Int) -> some View {
         let cat = categories[i]
         return VStack(alignment: .center, spacing: 0) {
-            // 카테고리 바
+            // White Radious Category Bar 
             HStack {
                 
                 Text(cat.name)
@@ -144,7 +147,7 @@ struct ShoppingListView: View {
                     .shadow(color: .gray.opacity(0.2), radius: 2, x: 0, y: 1)
             )
             
-            
+            // When category drop down expanded! 
             if cat.isExpanded {
                 ZStack(alignment: .topLeading) {
                     RoundedRectangle(cornerRadius: 15)
@@ -212,7 +215,11 @@ struct ShoppingListView: View {
         let item = categories[i].items[j]
         return HStack(alignment: .top, spacing: 8) {
             Button {
-                // 선택 상태 토글 구현 가능
+                // Selected List corcle button 
+                // It will make it again code here 
+                
+                // next Task 
+                
             } label: {
                 ZStack {
                     Circle()
