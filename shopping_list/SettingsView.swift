@@ -1,34 +1,28 @@
-//
-//  SettingsView.swift
-//  shopping_list
-//
-//  Created by Heesu Cho on 2025-02-27.
-//
-
 import SwiftUI
 
 struct SettingsView: View {
-    @Environment(\.presentationMode) var presentationMode  // Allows back navigation
-
     var body: some View {
         NavigationView {
             VStack {
+                // Profile Section
                 HStack {
-                    Button(action: {
-                        presentationMode.wrappedValue.dismiss()  // Go back to Home
-                    }) {
-                        Image(systemName: "arrow.left")
-                            .font(.title)
-                            .padding()
+                    Image(systemName: "person.circle.fill")
+                        .resizable()
+                        .frame(width: 80, height: 80)
+                        .foregroundColor(.gray)
+                    VStack(alignment: .leading) {
+                        Text("John Doe")
+                            .font(.title2)
+                            .fontWeight(.bold)
+                        Text("john.doe@test.com")
+                            .font(.subheadline)
+                            .foregroundColor(.gray)
                     }
                     Spacer()
-                    Text("Settings")
-                        .font(.largeTitle)
-                        .fontWeight(.bold)
-                    Spacer()
                 }
-                .padding(.horizontal)
+                .padding()
 
+                // Settings Options
                 List {
                     NavigationLink(destination: Text("Account Settings")) {
                         HStack {
@@ -37,7 +31,7 @@ struct SettingsView: View {
                             Text("Account")
                         }
                     }
-
+                    
                     NavigationLink(destination: Text("Help & Feedback")) {
                         HStack {
                             Image(systemName: "questionmark.circle.fill")
@@ -45,7 +39,7 @@ struct SettingsView: View {
                             Text("Help and Feedback")
                         }
                     }
-
+                    
                     NavigationLink(destination: Text("Canadian Grocery Tax Guide")) {
                         HStack {
                             Image(systemName: "doc.text.fill")
@@ -53,7 +47,7 @@ struct SettingsView: View {
                             Text("Canadian Grocery Tax Guide")
                         }
                     }
-
+                    
                     Button(action: {
                         print("Logout pressed")
                     }) {
@@ -64,7 +58,7 @@ struct SettingsView: View {
                         }
                     }
                 }
-
+                
                 Spacer()
             }
         }
