@@ -1,5 +1,3 @@
-
-//
 //  ShoppingListView.swift
 //  shopping_list
 //
@@ -9,12 +7,12 @@
 import SwiftUI
 
 struct ShoppingListView: View {
-    let folderName: String  // HomeView에서 전달된 폴더명 (저장 키에 사용)
+    let folderName: String  // HomeView에서 전달된 폴더명
     @Environment(\.presentationMode) var presentationMode
     
     @State private var categories: [CategoryModel] = []
     
-    // category add and edit default value
+    // 카테고리 추가/편집 시트
     @State private var isShowingAddCategorySheet = false
     @State private var newCategoryName = ""
     
@@ -22,63 +20,68 @@ struct ShoppingListView: View {
     @State private var editCategoryIndex: Int? = nil
     @State private var editCategoryName = ""
     
-    // which category do i have to add?
-    // add catogory > Add category title > add Item > added list in the category
+    // 아이템 추가 시트
     @State private var isShowingAddItemSheet = false
     @State private var addItemCategoryIndex: Int? = nil
     
-    // Bottom Navigation bar
-    @State private var selectedTab: Int = 1
-    
     var body: some View {
-        NavigationView {
-            ZStack {
-                LinearGradient(
-                    gradient: Gradient(colors: [.white, Color(red: 0.8, green: 0.88, blue: 0.97)]),
-                    startPoint: .top,
-                    endPoint: .bottom
-                )
-                .edgesIgnoringSafeArea(.all)
-                
-                VStack(spacing: 0) {
-                    topBar
-                    Spacer()
-                    ScrollView {
-                        VStack(spacing: 16) {
-                            ForEach(categories.indices, id: \.self) { i in
-                                categorySection(i: i)
-                            }
-                        }
-                        .padding(.horizontal, 16)
-                        .padding(.top, 10)
-                    }
-                    Spacer()
-                    customTabBar
-                }
-            }
-            .navigationBarHidden(true)
-            .onAppear { loadCategories() }
+        // ✅ NavigationView 삭제 → iOS 기본 "< back" 안 뜸
+        ZStack {
+            // 배경 그라디언트
+            LinearGradient(
+                gradient: Gradient(colors: [
+                    .white,
+                    Color(red: 0.8, green: 0.88, blue: 0.97)
+                ]),
+                startPoint: .top,
+                endPoint: .bottom
+            )
+            .edgesIgnoringSafeArea(.all)
             
-           // MODAL SETTINGS 
-             // Category add modal 
-            .sheet(isPresented: $isShowingAddCategorySheet) { addCategorySheet }
-            // Category Edit modal
-            .sheet(isPresented: $isShowingEditCategorySheet) { editCategorySheet }
-            // catogory Items modal 
-            .sheet(isPresented: $isShowingAddItemSheet) {
-                let idx = addItemCategoryIndex ?? 0
-                if idx < categories.count {
-                    AddItemSheet { name, price, cat in
-                        let newItem = ShoppingItem(name: name, price: price, category: cat)
-                        categories[idx].items.append(newItem)
-                        saveCategories()
+            VStack(spacing: 0) {
+                // 상단: 커스텀 화살표 + Title
+                topBar
+                
+                Spacer()
+                
+                ScrollView {
+                    VStack(spacing: 16) {
+                        ForEach(categories.indices, id: \.self) { i in
+                            categorySection(i)
+                        }
                     }
-                } else {
-                    AddItemSheet { name, price, cat in
-                        let newItem = ShoppingItem(name: name, price: price, category: cat)
-                        categories[0].items.append(newItem)
-                        saveCategories()
-                    }
+                    .padding(.horizontal, 16)
+                    .padding(.top, 10)
+                }
+                
+                Spacer()
+                // 하단 네비게이션 전부 없음
+            }
+        }
+        // 데이터 로드
+        .onAppear {
+            loadCategories()
+        }
+        // 시트 연결
+        .sheet(isPresented: $isShowingAddCategorySheet) {
+            addCategorySheet
+        }
+        .sheet(isPresented: $isShowingEditCategorySheet) {
+            editCategorySheet
+        }
+        .sheet(isPresented: $isShowingAddItemSheet) {
+            let idx = addItemCategoryIndex ?? 0
+            if idx < categories.count {
+                AddItemSheet { name, price, cat in
+                    let newItem = ShoppingItem(name: name, price: price, category: cat)
+                    categories[idx].items.append(newItem)
+                    saveCategories()
+                }
+            } else if !categories.isEmpty {
+                AddItemSheet { name, price, cat in
+                    let newItem = ShoppingItem(name: name, price: price, category: cat)
+                    categories[0].items.append(newItem)
+                    saveCategories()
                 }
             }
         }
@@ -87,6 +90,7 @@ struct ShoppingListView: View {
     // MARK: - Top Bar
     private var topBar: some View {
         HStack {
+            // 커스텀 화살표(←)
             Button {
                 presentationMode.wrappedValue.dismiss()
             } label: {
@@ -95,10 +99,15 @@ struct ShoppingListView: View {
                     .padding()
             }
             Spacer()
+            
+            // 중앙: "folderName List"
             Text("\(folderName) List")
-                .foregroundColor(/*@START_MENU_TOKEN@*/.blue/*@END_MENU_TOKEN@*/)
+                .foregroundColor(.blue)
                 .fontWeight(.bold)
+            
             Spacer()
+            
+            // 우측: "+ Category"
             Button {
                 isShowingAddCategorySheet = true
             } label: {
@@ -112,21 +121,26 @@ struct ShoppingListView: View {
     }
     
     // MARK: - Category Section
-    private func categorySection(i: Int) -> some View {
+    private func categorySection(_ i: Int) -> some View {
         let cat = categories[i]
-        return VStack(alignment: .center, spacing: 0) {
-            // White Radious Category Bar 
+        return VStack(spacing: 0) {
+            // Category Header
             HStack {
-                
                 Text(cat.name)
                     .font(.headline)
                     .foregroundColor(.gray)
-                    
-                  
                 Spacer()
                 Menu {
-                    Button(role: .destructive) { deleteCategory(i) } label: { Text("Delete Category") }
-                    Button { startEditingCategory(i) } label: { Text("Edit Category") }
+                    Button(role: .destructive) {
+                        deleteCategory(i)
+                    } label: {
+                        Text("Delete Category")
+                    }
+                    Button {
+                        startEditingCategory(i)
+                    } label: {
+                        Text("Edit Category")
+                    }
                 } label: {
                     Image(systemName: "ellipsis")
                         .foregroundColor(.gray)
@@ -147,22 +161,19 @@ struct ShoppingListView: View {
                     .shadow(color: .gray.opacity(0.2), radius: 2, x: 0, y: 1)
             )
             
-            // When category drop down expanded! 
+            // 펼침
             if cat.isExpanded {
                 ZStack(alignment: .topLeading) {
                     RoundedRectangle(cornerRadius: 15)
-                        
-                        
                         .foregroundColor(.white)
                         .shadow(color: .gray.opacity(0.15), radius: 3, x: -1, y: 2)
-                        
                     
                     VStack(alignment: .leading, spacing: 0) {
                         HStack {
                             Text("Title")
                                 .font(.subheadline)
                                 .foregroundColor(.gray)
-                                .padding(.bottom,12)
+                                .padding(.bottom, 12)
                             Spacer()
                             Text("Price")
                                 .font(.subheadline)
@@ -215,16 +226,11 @@ struct ShoppingListView: View {
         let item = categories[i].items[j]
         return HStack(alignment: .top, spacing: 8) {
             Button {
-                // Selected List corcle button 
-                // It will make it again code here 
-                
-                // next Task 
-                
+                // circle check
             } label: {
                 ZStack {
                     Circle()
                         .stroke(Color.gray, lineWidth: 2)
-                
                         .frame(width: 20, height: 18)
                 }
             }
@@ -260,56 +266,6 @@ struct ShoppingListView: View {
         .padding(.horizontal, 10)
     }
     
-    // MARK: - Bottom Navigation
-    private var customTabBar: some View {
-        ZStack {
-            RoundedRectangle(cornerRadius: 16)
-                .foregroundColor(.white)
-                .shadow(color: .gray.opacity(0.3), radius: 3, x: 0, y: -2)
-                .frame(height: 80)
-                .padding(.horizontal, 16)
-            HStack {
-                Button {
-                    selectedTab = 0
-                } label: {
-                    VStack {
-                        Image(systemName: "house.fill")
-                            .foregroundColor(selectedTab == 0 ? Color(red: 0.54, green: 0.73, blue: 0.91) : .gray)
-                        Text("Home")
-                            .font(.caption2)
-                            .foregroundColor(selectedTab == 0 ? Color(red: 0.54, green: 0.73, blue: 0.91) : .gray)
-                    }
-                }
-                Spacer()
-                Button {
-                    selectedTab = 1
-                } label: {
-                    VStack {
-                        Image(systemName: "list.bullet")
-                            .foregroundColor(selectedTab == 1 ? Color(red: 0.54, green: 0.73, blue: 0.91) : .gray)
-                        Text("List")
-                            .font(.caption2)
-                            .foregroundColor(selectedTab == 1 ? Color(red: 0.54, green: 0.73, blue: 0.91) : .gray)
-                    }
-                }
-                Spacer()
-                Button {
-                    selectedTab = 2
-                } label: {
-                    VStack {
-                        Image(systemName: "gearshape.fill")
-                            .foregroundColor(selectedTab == 2 ? Color(red: 0.54, green: 0.73, blue: 0.91) : .gray)
-                        Text("Settings")
-                            .font(.caption2)
-                            .foregroundColor(selectedTab == 2 ? Color(red: 0.54, green: 0.73, blue: 0.91) : .gray)
-                    }
-                }
-            }
-            .padding(.horizontal, 40)
-        }
-        .padding(.bottom, 10)
-    }
-    
     // MARK: - Category Actions
     private func startEditingCategory(_ i: Int) {
         guard i < categories.count else { return }
@@ -324,7 +280,6 @@ struct ShoppingListView: View {
         saveCategories()
     }
     
-    // MARK: - Item Actions
     private func removeItem(categoryIndex i: Int, itemIndex j: Int) {
         guard i < categories.count, j < categories[i].items.count else { return }
         categories[i].items.remove(at: j)
@@ -351,7 +306,7 @@ struct ShoppingListView: View {
         }
     }
     
-    // MARK: - Add Category Sheet View
+    // MARK: - Add Category Sheet
     private var addCategorySheet: some View {
         VStack {
             Text("Add Category")
@@ -386,7 +341,7 @@ struct ShoppingListView: View {
         .presentationDragIndicator(.visible)
     }
     
-    // MARK: - Edit Category Sheet View
+    // MARK: - Edit Category Sheet
     private var editCategorySheet: some View {
         VStack {
             Text("Edit Category")
@@ -422,8 +377,7 @@ struct ShoppingListView: View {
     }
 }
 
-// MARK: - Add Item Sheet View
-
+// MARK: - Add Item Sheet
 struct AddItemSheet: View {
     @Environment(\.presentationMode) var presentationMode
     @State private var itemName: String = ""
@@ -494,9 +448,7 @@ struct AddItemSheet: View {
 }
 
 // MARK: - Preview
-
 #Preview {
-    ShoppingListView(folderName: "Grocery Folder")
+    // 미리보기 → iOS 시스템 "Back" 없음, 커스텀 화살표 있음
+    ShoppingListView(folderName: "SampleFolder")
 }
-
-
