@@ -1,3 +1,8 @@
+//
+//  ForgotPasswordView.swift
+//  shopping_list
+//
+
 import SwiftUI
 
 struct ForgotPasswordView: View {
@@ -156,7 +161,8 @@ struct ForgotPasswordView: View {
             return
         }
 
-        UserDefaults.standard.set(newPassword, forKey: "userPassword_\(email.lowercased())")
+        // 기존의 "userPassword_\(email.lowercased())" 대신 "registeredPassword"로 저장하여 로그인 시 변경된 비밀번호가 사용됩니다.
+        UserDefaults.standard.set(newPassword, forKey: "registeredPassword")
         successMessage = "Password updated successfully."
         errorMessage = ""
         newPassword = ""
