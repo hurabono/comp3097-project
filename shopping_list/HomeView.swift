@@ -5,8 +5,6 @@
 //  Created by Heesu Cho on 2025-02-27.
 //
 
-
-
 import SwiftUI
 
 // MARK: - Folder Model
@@ -25,97 +23,85 @@ struct Folder: Identifiable, Codable {
 }
 
 struct HomeView: View {
-    // Home view default value
-    // MARK: - State
-    // ser empty space > No folder 
     @State private var folders: [Folder] = []
 
-    // Add Folder Sheet
     @State private var isShowingAddFolderSheet = false
-    // Edit Folder Sheet
     @State private var isShowingEditFolderSheet = false
 
-    // New folder inputs
     @State private var newFolderName: String = ""
     @State private var newFolderDescription: String = ""
 
-    // Edit folder inputs
     @State private var editFolder: Folder? = nil
     @State private var editFolderName: String = ""
     @State private var editFolderDescription: String = ""
 
-    // 3dots menu for each folder
-    // modal delete and edit folder 
     @State private var folderForOptions: Folder? = nil
     @State private var isShowingFolderOptions = false
 
-    // Bottom tab selection 
-    // Bottom tab will imply soon for every sections
-    // 0=Home, 1=List, 2=Settings
+    // 하단 탭 (0=Home, 1=List, 2=Settings)
     @State private var selectedTab: Int = 0
 
-    // MARK: - Body
     var body: some View {
         NavigationView {
             ZStack {
-                // Background gradient
+                // 배경 그라디언트
                 LinearGradient(
-                    gradient: Gradient(colors: [.white,
-                                                Color(red: 0.8, green: 0.88, blue: 0.97)]),
+                    gradient: Gradient(colors: [
+                        Color.white,
+                        Color(red: 0.8, green: 0.88, blue: 0.97)
+                    ]),
                     startPoint: .top,
                     endPoint: .bottom
                 )
                 .edgesIgnoringSafeArea(.all)
 
                 VStack(spacing: 0) {
-                    // Top Bar
                     topBar
 
                     Spacer()
 
-                    // Tab Content
+                    // 탭별 화면 전환
                     if selectedTab == 0 {
                         homeTabView
                     } else if selectedTab == 1 {
-                        listTabView
+                        // LIST 탭 → AllCategoriesView (필요 시 교체)
+                        AllCategoriesView()
+                            .navigationBarBackButtonHidden(true)
+                            .navigationBarHidden(true)
                     } else {
-                        settingsTabView
+                        // SETTINGS 탭 → SettingsView
+                        SettingsView()
+                            .navigationBarBackButtonHidden(true)
+                            .navigationBarHidden(true)
                     }
 
                     Spacer()
 
-                    // Bottom Tab Bar (fully rounded corners)
+                    // 하단 탭 바
                     customTabBar
                 }
 
-                // Floating + Button
+                // + 버튼
                 if selectedTab == 0 || selectedTab == 1 {
                     plusFloatingButton
                 }
             }
+            // 전체적으로 iOS 기본 상단 바 숨김
             .navigationBarHidden(true)
+            .navigationBarBackButtonHidden(true)
         }
-        // Load folders on appear
+        // 폴더 로드
         .onAppear {
             loadFolders()
         }
-        // Add folder sheet
+        // Folder Add/Edit
         .sheet(isPresented: $isShowingAddFolderSheet) {
             addFolderSheet
-                .presentationDetents([.height(330)])
-                .presentationDragIndicator(.hidden)
         }
-        // Edit folder sheet
         .sheet(isPresented: $isShowingEditFolderSheet) {
             editFolderSheet
-                .presentationDetents([.height(330)])
-                .presentationDragIndicator(.hidden)
         }
-        // 3-dot menu dialog (Delete / Edit)
-        .confirmationDialog(
-            "Folder Options",
-            isPresented: $isShowingFolderOptions
-        ) {
+        .confirmationDialog("Folder Options", isPresented: $isShowingFolderOptions) {
             if let folder = folderForOptions {
                 Button("Delete", role: .destructive) {
                     deleteFolder(folder)
@@ -132,16 +118,12 @@ struct HomeView: View {
     // MARK: - Top Bar
     private var topBar: some View {
         HStack {
-            Button(action: {}) {
-                Image(systemName: "line.3.horizontal")
-                    .font(.title2)
-                    .foregroundColor(.gray)
-            }
+            
 
             Spacer()
 
-            // App logo
-            HStack(spacing: 0) {
+            // 중앙 로고
+            HStack(spacing: 2) {
                 Text("E")
                     .foregroundColor(Color(red: 0.54, green: 0.73, blue: 0.91))
                     .font(.system(size: 28, weight: .bold))
@@ -151,10 +133,9 @@ struct HomeView: View {
             }
 
             Spacer()
-            // right spacing
-            Spacer().frame(width: 40)
+            Spacer().frame(width: 5)
         }
-        .padding(.horizontal, 16)
+        .padding(.horizontal, 20)
         .padding(.top, 50)
         .padding(.bottom, 20)
     }
@@ -163,7 +144,6 @@ struct HomeView: View {
     private var homeTabView: some View {
         VStack {
             if folders.isEmpty {
-                // 1) No folders
                 Image(systemName: "list.bullet.rectangle")
                     .resizable()
                     .scaledToFit()
@@ -179,9 +159,7 @@ struct HomeView: View {
                     .font(.subheadline)
                     .foregroundColor(.gray.opacity(0.8))
                     .padding(.top, 2)
-
             } else {
-                // 2) Folders exist
                 ScrollView {
                     let columns = [
                         GridItem(.flexible()),
@@ -189,8 +167,12 @@ struct HomeView: View {
                     ]
                     LazyVGrid(columns: columns, spacing: 16) {
                         ForEach(folders) { folder in
-                            // Folder card → ShoppingListView
-                            NavigationLink(destination: ShoppingListView(folderName: folder.name)) {
+                            // 폴더 클릭 → 해당 ShoppingListView로
+                            NavigationLink(destination:
+                                ShoppingListView(folderName: folder.name)
+                                    .navigationBarHidden(true)
+                                    .navigationBarBackButtonHidden(true)
+                            ) {
                                 folderCard(folder: folder)
                             }
                             .buttonStyle(PlainButtonStyle())
@@ -202,31 +184,17 @@ struct HomeView: View {
         }
     }
 
-    // MARK: - List Tab
-    private var listTabView: some View {
-        Text("List Screen")
-            .font(.headline)
-            .foregroundColor(.gray)
-    }
-
-    // MARK: - Settings Tab
-    private var settingsTabView: some View {
-        Text("Settings Screen")
-            .font(.headline)
-            .foregroundColor(.gray)
-    }
-
-    // MARK: - Fully Rounded Bottom Tab Bar
+    // MARK: - Bottom Tab Bar
     private var customTabBar: some View {
         ZStack {
-            RoundedRectangle(cornerRadius: 16) // Round all corners
+            RoundedRectangle(cornerRadius: 16)
                 .foregroundColor(.white)
                 .shadow(color: .gray.opacity(0.3), radius: 3, x: 0, y: -2)
                 .frame(height: 80)
                 .padding(.horizontal, 16)
 
             HStack {
-                // Home
+                // HOME
                 Button {
                     selectedTab = 0
                 } label: {
@@ -242,10 +210,9 @@ struct HomeView: View {
                                              : .gray)
                     }
                 }
-
                 Spacer()
 
-                // List
+                // LIST
                 Button {
                     selectedTab = 1
                 } label: {
@@ -261,10 +228,9 @@ struct HomeView: View {
                                              : .gray)
                     }
                 }
-
                 Spacer()
 
-                // Settings
+                // SETTINGS
                 Button {
                     selectedTab = 2
                 } label: {
@@ -286,7 +252,7 @@ struct HomeView: View {
         .padding(.bottom, 10)
     }
 
-    // MARK: - Floating Add folder Button
+    // MARK: - + Folder Floating Button
     private var plusFloatingButton: some View {
         VStack {
             Spacer()
@@ -322,7 +288,6 @@ struct HomeView: View {
                 .shadow(color: .gray.opacity(0.2), radius: 3, x: 0, y: 2)
 
             VStack(alignment: .leading, spacing: 6) {
-                // 3-dot menu button
                 HStack {
                     Spacer()
                     Button {
@@ -336,7 +301,6 @@ struct HomeView: View {
                 .padding(.top, 8)
                 .padding(.trailing, 8)
 
-                // Name & description
                 Text(folder.name)
                     .font(.headline)
                     .foregroundColor(Color(red: 0.54, green: 0.73, blue: 0.91))
@@ -347,7 +311,6 @@ struct HomeView: View {
 
                 Spacer()
 
-                // Item count
                 Text("\(folder.itemCount) Item\(folder.itemCount > 1 ? "s" : "")")
                     .font(.footnote)
                     .foregroundColor(.gray)
@@ -367,7 +330,6 @@ struct HomeView: View {
                     .foregroundColor(.gray)
                     .padding(.top, 20)
 
-                // Title
                 VStack(alignment: .leading, spacing: 6) {
                     Text("Title")
                         .font(.caption)
@@ -378,7 +340,6 @@ struct HomeView: View {
                 .padding(.horizontal, 24)
                 .padding(.top, 16)
 
-                // Description
                 VStack(alignment: .leading, spacing: 6) {
                     Text("Description")
                         .font(.caption)
@@ -389,7 +350,6 @@ struct HomeView: View {
                 .padding(.horizontal, 24)
                 .padding(.top, 16)
 
-                // Add Folder button
                 Button {
                     addFolder()
                     isShowingAddFolderSheet = false
@@ -408,7 +368,6 @@ struct HomeView: View {
                 Spacer()
             }
 
-            // Close X
             Button {
                 isShowingAddFolderSheet = false
             } label: {
@@ -430,7 +389,6 @@ struct HomeView: View {
                     .foregroundColor(.gray)
                     .padding(.top, 20)
 
-                // Title
                 VStack(alignment: .leading, spacing: 6) {
                     Text("Title")
                         .font(.caption)
@@ -441,7 +399,6 @@ struct HomeView: View {
                 .padding(.horizontal, 24)
                 .padding(.top, 16)
 
-                // Description
                 VStack(alignment: .leading, spacing: 6) {
                     Text("Description")
                         .font(.caption)
@@ -452,7 +409,6 @@ struct HomeView: View {
                 .padding(.horizontal, 24)
                 .padding(.top, 16)
 
-                // Save button
                 Button {
                     saveEditFolder()
                     isShowingEditFolderSheet = false
@@ -471,7 +427,6 @@ struct HomeView: View {
                 Spacer()
             }
 
-            // Close X
             Button {
                 isShowingEditFolderSheet = false
             } label: {
@@ -484,7 +439,7 @@ struct HomeView: View {
         }
     }
 
-    // MARK: - Add Folder Logic
+    // MARK: - Folder Logic
     private func addFolder() {
         guard !newFolderName.isEmpty else { return }
         let folder = Folder(name: newFolderName,
@@ -493,26 +448,21 @@ struct HomeView: View {
         folders.append(folder)
         saveFolders()
 
-        // Reset inputs
         newFolderName = ""
         newFolderDescription = ""
     }
 
-    // MARK: - Delete Folder
     private func deleteFolder(_ folder: Folder) {
         folders.removeAll { $0.id == folder.id }
         saveFolders()
     }
 
-    // MARK: - Start Editing
     private func startEditingFolder(_ folder: Folder) {
         editFolder = folder
         editFolderName = folder.name
         editFolderDescription = folder.description
-        isShowingEditFolderSheet = true
     }
 
-    // MARK: - Save Edit
     private func saveEditFolder() {
         guard let target = editFolder else { return }
         if let idx = folders.firstIndex(where: { $0.id == target.id }) {
@@ -525,7 +475,6 @@ struct HomeView: View {
         editFolderDescription = ""
     }
 
-    // MARK: - Save / Load Folders
     private func saveFolders() {
         if let encoded = try? JSONEncoder().encode(folders) {
             UserDefaults.standard.set(encoded, forKey: "shoppingFolders")
